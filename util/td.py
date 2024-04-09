@@ -75,9 +75,6 @@ def getReqdTrainData(parsed_body, areas, berths, trainids):
                 if to_berth in berths:
                     found = True
 
-                if description in trainids:
-                    found = True
-
             else:
 
                 found = False
