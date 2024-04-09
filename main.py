@@ -18,6 +18,9 @@ class Listener(stomp.ConnectionListener):
     def __init__(self, mq: stomp.Connection, durable=False):
         self._mq = mq
         self.is_durable = durable
+        self.berths = ["0107", "0109", "0113", "0115", "0117", "0106", "0108", "0110", "0114", "0116", "0118"]
+        self.areas = ["CA"]
+        self.trainids = ["1T46", "1T47"]
 
     def on_message(self, frame):
         headers, message_raw = frame.headers, frame.body
@@ -29,8 +32,15 @@ class Listener(stomp.ConnectionListener):
 
         if headers["destination"].startswith("/topic/TRAIN_MVT_"):
             trust.print_trust_frame(parsed_body)
+        elif headers["destination"].startswith("TRAIN_MVT_"):
+            trust.print_trust_frame(parsed_body)
         elif headers["destination"].startswith("/topic/TD_"):
             td.print_td_frame(parsed_body)
+        elif headers["destination"].startswith("TD_"):
+            td.getReqdTrainData(parsed_body, self.areas, self.berths, self.trainids)
+        else:
+            print("Data received, but cannot determine type")
+            print(headers["destination"])
 
     def on_error(self, frame):
         print('received an error {}'.format(frame.body))
